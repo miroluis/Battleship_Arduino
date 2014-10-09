@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+    	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+    	<meta name="viewport" content="width=device-width, initial-scale=1">
+    	<meta name="description" content="battleship game">
+    	<meta name="author" content="crossing answers">
+	  	<title>neopixel explosion | lx maker faire</title>
+      <!-- Bootstrap core CSS -->
+      <link href="css/bootstrap.min.css" rel="stylesheet">
+      <link href="css/cover.css" rel="stylesheet">
+	</head>
+	<body>
+	
+    <div class="site-wrapper">
+
+      <div class="site-wrapper-inner">
+
+        <div class="cover-container">
+
+          <div class="masthead clearfix">
+            <div class="inner">
+              <h3 class="masthead-brand">Battleship</h3>
+              <ul class="nav masthead-nav">
+                <li class="active"><a href="#">Game</a></li>
+                <li><a href="#">Options</a></li>
+                <li><a href="#">About</a></li>
+              </ul>
+            </div>
+          </div>
+
+          <div id="start_dialog" class="inner cover">
+            <h1 class="cover-heading">Your name:</h1>
+            <p class="lead"><input id="uname" class="form-control" /></p>
+            <p class="lead">
+              <a id="startgame" class="btn btn-lg btn-default">Start!</a>
+            </p>
+          </div>
+
+          <div id="game" class="inner cover hidden">
+             <canvas  id="simple_sketch" width="400" height="200" style="border: 2px solid #fff;" ></canvas>
+          </div>
+
+          <div class="mastfoot">
+            <div class="inner">
+              <p>Made by <a href="http://crossinganswers.com">Crossing Answers</a>.</p>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+    <!-- js -->
+    <script src="js/jquery-2.1.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="js/sketch.min.js"></script>
+    <script>
+    var socket = io();
+
+    function display_game() {
+      $('#start_dialog').addClass('hidden');
+      $("#game").removeClass("hidden");
+      $.each(['#f00', '#ff0', '#0f0', '#0ff', '#00f', '#f0f', '#000', '#fff'], function() {
+      $('#game').append("<a href='#colors_sketch' data-color='" + this + "' style='width: 10px; background: " + this + ";'></a> ");
+    });
+    $.each([3, 5, 10, 15], function() {
+      $('#game').append("<a href='#colors_sketch' data-size='" + this + "' style='background: #ccc'>" + this + "</a> ");
+    });
+      $('#simple_sketch').sketch();
+      $('#simple_sketch').on('mouseover, mousedown', function(e) {
+        console.log('mousedown');
+        console.log(e.offsetX +" "+ e.offsetY);
+        socket.emit('paint', e.offsetX, e.offsetY);
+      })
+    }
+
+    $("#startgame").on('click', function(e) {
+      console.log($('#uname').val());
+      socket.emit('adduser', $('#uname').val());
+      
+      display_game();
+    });
+
+    </script>
+	</body>
+</html>
